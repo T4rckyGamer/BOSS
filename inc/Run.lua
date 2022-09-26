@@ -49,44 +49,34 @@ BOT_User = "@"..GetToken.result.username
 io.write('\n\27[1;36m- تم ادخال التوكن بنجاح   \n- Success Enter Your Token: \27[1;34m@'..GetToken.result.username..'\n\27[0;39;49m') 
 end
 
-io.write('\n\27[1;33m- ادخل مـعرف المـطـور الاسـاسـي ↓  \n- Enter your USERNAME SUDO : \27[0;39;49m')
+io.write('\n\27[1;33m￤آدخل ايدي آلمـطـور آلآسـآسـي ↓  \n￤Enter your ID SUDO : \27[0;39;49m')
 SUDO_USER = io.read():gsub(' ','')
 if SUDO_USER == '' then
-print('\n\27[1;31m-  You Did not Enter USERNAME !\n-  لم تقوم بادخال شـي , يرجى الانتباة‏‏ وادخل الان مـعرف المـطـور الاسـاسـي')
+print('\n\27[1;31m￤ You Did not Enter ID !\n￤ لم تقوم بآدخآل شـي , يرجى آلآنتبآهہ‏‏ وآدخل آلآن ايدي آلمطور آلآسـآسـي')
 create_config(Token)
 end 
-if not SUDO_USER:match('@[%a%d_]') then
-print('\n\27[1;31m-  This is Not USERNAME !\n- ة‏‏ذا ليس مـعرف حسـاب تلگرام , عذرا ادخل المـعرف الصـحيح الان . ')
+if not SUDO_USER:match('(%d+)(%d+)(%d+)(%d+)(%d+)') then
+print('\n\27[1;31m￤ This is Not ID !\n￤هہ‏‏ذآ الايدي ليس موجود بل تلگرآم , عذرآ آدخل آلايدي آلصـحيح آلآن . ')
 create_config(Token)
 end 
-local DirFol = io.popen("echo $(cd $(dirname $0); pwd)"):read('*all'):gsub(' ',''):gsub("\n",'')
-user = {}
-user.username = SUDO_USER
-user.Source  = "/root/BOSS"
-local url , res = https.request('https://api.th3boss.com/GetID/?Array='..JSON.encode(user))
+print('('..SUDO_USER..')')
+local url , res = https.request('https://api.telegram.org/bot'..Token..'/getchat?chat_id='..SUDO_USER)
 print(res)
 if res ~= 200 then
-print('\n\27[1;31m-  Conect is Failed !\n-  حدث خطـا في الاتصـال بالسـيرفر , يرجى مـراسـلة‏‏ مـطـور السـورس ليتمـگن مـن حل المـشـگلة‏‏ في اسـرع وقت مـمـگن . !')
+print('\n\27[1;31m￤ Conect is Failed !\n￤ حدث خطـآ في آلآتصـآل بآلسـيرفر , يرجى مـرآسـلهہ‏‏ مـطـور آلسـورس ليتمـگن مـن حل آلمـشـگلهہ‏‏ في آسـرع وقت مـمـگن . !')
 os.exit()
 end
 success, GetUser = pcall(JSON.decode, url)
 if not success then
-print('\n\27[1;31m-  Conect is Failed !\n-  حدث مشـگلة‌‏ في سـگربت الاسـتخراج , يرجى مـراسـلة‏‏ مـطـور السـورس ليتمـگن مـن حل المـشـگلة‏‏ في اسـرع وقت مـمـگن . !')
+print('\n\27[1;31m￤ Conect is Failed !\n￤ حدث مشـگلهہ‌‏ في سـگربت آلآسـتخرآج , يرجى مـرآسـلهہ‏‏ مـطـور آلسـورس ليتمـگن مـن حل آلمـشـگلهہ‏‏ في آسـرع وقت مـمـگن . !')
 os.exit()
 end
-if not GetUser.result then
-if GetUser.cause then
-print('\n\27[1;31m-  '..GetUser.cause)
-os.exit()
-end
-print('\n\27[1;31m-  {USERNAME_NOT_OCCUPIED} => Please Check it!\n-  لا يوجد حسـاب بة‏‏ذا المـعرف , تاگد مـنة‏‏ جيدا  !')
+if GetUser.ok == false then
+print('\n\27[1;31m￤ {USERNAME_NOT_OCCUPIED} => Please Check it!\n￤ لآ يوجد حسـآب بهہ‏‏ذآ آلايدي , تآگد مـنهہ‏‏ جيدآ  !')
 create_config(Token)
 end 
-if GetUser.information.typeuser ~= "UserTypeGeneral" then
-print('\n\27[1;31m-  This UserName is not personal account !\n- عذرا يرجى ادخال معرف حساب شخصي ليكون مطور البوت وليس معرف قناة او بوت او مجموعة !')
-create_config(Token)
-end
-print('\n\27[1;36m- تم ادخال مـعرف المـطـور بنجاح , سـوف يتم تشـغيل السـورس الان .\n- Success Save USERNAME IS_ID: \27[0;32m['..GetUser.information.id..']\n\27[0;39;49m')
+GetUser.result.username = GetUser.result.username or GetUser.result.first_name
+print('\n\27[1;36m￤تم آدخآل آيدي آلمـطـور بنجآح , سـوف يتم تشـغيل آلسـورس آلآن .\n￤Success Save ID : \27[0;32m['..SUDO_USER..']\n\27[0;39;49m')
 boss = Token:match("(%d+)")
 redis:mset(
 boss..":VERSION",GetUser.information.Source_version,
